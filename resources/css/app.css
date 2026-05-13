@@ -1,0 +1,83 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+
+    /* ── Colors ── */
+    --color-primary: #006162;
+    --color-primary-container: #2c7a7b;
+    --color-primary-fixed: #a5eff0;
+    --color-primary-fixed-dim: #89d3d4;
+    --color-on-primary: #ffffff;
+    --color-on-primary-fixed: #002020;
+    --color-on-primary-fixed-variant: #004f50;
+    --color-inverse-primary: #89d3d4;
+    --color-surface-tint: #13696a;
+
+    --color-secondary: #595f63;
+    --color-secondary-container: #dbe0e5;
+    --color-secondary-fixed: #dee3e8;
+    --color-secondary-fixed-dim: #c2c7cc;
+    --color-on-secondary: #ffffff;
+    --color-on-secondary-fixed: #171c20;
+    --color-on-secondary-fixed-variant: #42474c;
+    --color-on-secondary-container: #5e6368;
+
+    --color-tertiary: #81472a;
+    --color-tertiary-fixed: #ffdbcc;
+    --color-tertiary-fixed-dim: #ffb693;
+    --color-on-tertiary: #ffffff;
+    --color-on-tertiary-fixed: #351000;
+    --color-on-tertiary-container: #fff0eb;
+
+    --color-background: #f1f4f3;
+    --color-on-background: #181c1c;
+    --color-surface: #f7faf9;
+    --color-surface-white: #ffffff;
+    --color-surface-bright: #f7faf9;
+    --color-surface-dim: #d8dbda;
+    --color-surface-container: #eceeee;
+    --color-surface-container-low: #f1f4f3;
+    --color-surface-container-high: #e6e9e8;
+    --color-on-surface: #181c1c;
+    --color-on-surface-variant: #3f4949;
+    --color-inverse-surface: #2d3131;
+    --color-inverse-on-surface: #eff1f0;
+
+    --color-outline: #6f7979;
+    --color-outline-variant: #bec9c8;
+    --color-error: #ba1a1a;
+    --color-on-error: #ffffff;
+
+    --color-text-main: #2D3748;
+    --color-text-muted: #718096;
+    --color-accent-lavender: #E9D8FD;
+    --color-accent-pink: #FFF5F7;
+
+    --color-status-completed: #38A169;
+    --color-status-pending: #D97706;
+    --color-status-upcoming: #3182CE;
+    --color-status-cancelled: #E53E3E;
+
+    --color-sidebar-bg: #0a3535;
+    --color-sidebar-hover: #134545;
+    --color-sidebar-active: #1a5555;
+    --color-sidebar-text: #a5c8c8;
+    --color-sidebar-text-active: #ffffff;
+
+    /* ── Border radius ── */
+    --radius: 0.25rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    --radius-2xl: 1rem;
+
+    /* ── Font ── */
+    --font-sans: 'Manrope', sans-serif;
+}
