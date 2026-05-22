@@ -42,7 +42,7 @@ class AuthController extends Controller
         if ($user->super_admin) {
             session()->forget('company_id');
             app(PermissionRegistrar::class)->setPermissionsTeamId(null);
-            return redirect()->route('admin.index');
+            return redirect()->route('admin.dashboard');
         }
         $companyId = $user->company->id;
 

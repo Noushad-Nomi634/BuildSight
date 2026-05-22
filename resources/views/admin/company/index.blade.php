@@ -13,7 +13,7 @@
         </div>
     </div>
 
-    <!-- ── METRIC CARDS ── -->
+     <!-- ── METRIC CARDS ── -->
     <section class="grid grid-cols-1 sm:grid-cols-3 gap-3 lg:gap-4">
 
         <!-- Card 1 -->
@@ -125,6 +125,7 @@
         </div> --}}
 
     </section>
+
 
     <!-- ── CHARTS ROW ── -->
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -259,27 +260,26 @@
     <section class="grid grid-cols-1  gap-4">
 
         <!-- Today's Appointments Table -->
-        <div
+       <div
             class="bg-surface-white rounded-2xl shadow-sm border border-secondary-container/60 xl:col-span-3 overflow-hidden">
             <div class="px-5 py-4 border-b border-secondary-container flex justify-between items-center">
-                <div>
-                    <h3 class="font-bold text-[15px] text-on-surface">All Companies</h3>
+                {{--<div>
+                    <h3 class="font-bold text-[15px] text-on-surface">Today's Appointments</h3>
                     <p class="text-[11px] text-text-muted mt-0.5">4 scheduled · 1 cancelled</p>
-                </div>
+                </div>--}}
                 <button
                     class="text-primary text-[12px] font-semibold hover:underline transition-all flex items-center gap-1">
-                    View All <span class="material-symbols-outlined" style="font-size:14px">arrow_forward</span>
+                   {{--View All <span class="material-symbols-outlined" style="font-size:14px">arrow_forward</span>--}}
                 </button>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left min-w-[520px]">
                     <thead>
-
-                       <tr class="bg-surface-container-low">
+                        <tr class="bg-surface-container-low">
                             <th class="px-5 py-3 text-[10px] font-bold text-text-muted uppercase tracking-wider">
                                 profile</th>
                             <th class="px-5 py-3 text-[10px] font-bold text-text-muted uppercase tracking-wider">
-                                Email</th>
+                                Name</th>
                             <th class="px-5 py-3 text-[10px] font-bold text-text-muted uppercase tracking-wider">
                                 Phone</th>
                             <th class="px-5 py-3 text-[10px] font-bold text-text-muted uppercase tracking-wider">
@@ -291,6 +291,7 @@
                     </thead>
                     <tbody class="divide-y divide-secondary-container/70">
                         <!-- Row 1 -->
+                        {{-- @dd($companies) --}}
                         @foreach ($companies as $company)
                             <tr class="hover:bg-surface-container-low/60 transition-colors">
                                 <td class="px-5 py-3.5">
@@ -301,12 +302,11 @@
                                         <span class="font-semibold text-[13px] text-on-surface">{{ $company->name }}</span>
                                     </div>
                                 </td>
-                                <td class="px-5 py-3.5 text-[13px] text-on-surface-variant">{{ $company->email }}</td>
+                                <td class="px-5 py-3.5 text-[13px] text-on-surface-variant">{{ $company->name }}</td>
                                 <td class="px-5 py-3.5 text-[13px] text-on-surface-variant">{{ $company->phone }}</td>
                                 <td class="px-5 py-3.5 text-[13px] text-on-surface-variant">{{ $company->status }}</td>
 
-                               
-                             <td class="px-5 py-3.5">
+                                <td class="px-5 py-3.5">
     <div class="flex items-center gap-2">
 
         <!-- VIEW -->
@@ -343,163 +343,6 @@
 </td>
                             </tr>
                         @endforeach
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-
-
-    </section>
-
-    <section class="grid grid-cols-1  gap-4">
-
-       <!-- Projects Table -->
-<div class="bg-surface-white rounded-2xl shadow-sm border border-secondary-container/60 xl:col-span-3 overflow-hidden">
-
-    <div class="px-5 py-4 border-b border-secondary-container flex justify-between items-center">
-        <div>
-            <h3 class="font-bold text-[15px] text-on-surface">All Projects</h3>
-            <p class="text-[11px] text-text-muted mt-0.5">Project list</p>
-        </div>
-
-        <button class="text-primary text-[12px] font-semibold hover:underline transition-all flex items-center gap-1">
-            View All <span class="material-symbols-outlined" style="font-size:14px">arrow_forward</span>
-        </button>
-    </div>
-
-    <div class="overflow-x-auto">
-        <table class="w-full text-left min-w-[520px]">
-
-            <thead>
-                <tr class="bg-surface-container-low">
-                    <th class="px-5 py-3 text-[10px] font-bold text-text-muted uppercase tracking-wider">
-                        Name
-                    </th>
-                    <th class="px-5 py-3 text-[10px] font-bold text-text-muted uppercase tracking-wider">
-                        Project Code
-                    </th>
-                    <th class="px-5 py-3 text-[10px] font-bold text-text-muted uppercase tracking-wider">
-                        Start Date
-                    </th>
-                    <th class="px-5 py-3 text-[10px] font-bold text-text-muted uppercase tracking-wider">
-                        End Date
-                    </th>
-                    <th class="px-5 py-3 text-[10px] font-bold text-text-muted uppercase tracking-wider">
-                        Status
-                    </th>
-                </tr>
-            </thead>
-
-            <tbody class="divide-y divide-secondary-container/70">
-
-                @forelse ($projects as $project)
-                <tr class="hover:bg-surface-container-low/60 transition-colors">
-
-                    <!-- Name -->
-                    <td class="px-5 py-3.5">
-                        <div class="flex items-center gap-3">
-
-                            <span class="font-semibold text-[13px] text-on-surface">
-                                {{ $project->name }}
-                            </span>
-
-                        </div>
-                    </td>
-
-                    <!-- Project Code -->
-                    <td class="px-5 py-3.5 text-[13px] text-on-surface-variant">
-                        {{ $project->project_code }}
-                    </td>
-
-                    <!-- Start Date -->
-                    <td class="px-5 py-3.5 text-[13px] text-on-surface-variant">
-                        {{ $project->start_date }}
-                    </td>
-
-                    <!-- End Date -->
-                    <td class="px-5 py-3.5 text-[13px] text-on-surface-variant">
-                        {{ $project->end_date }}
-                    </td>
-
-                    <!-- Status -->
-                    <td class="px-5 py-3.5">
-                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold
-                            {{ $project->status == 'completed' ? 'bg-status-completed/10 text-status-completed' : 'bg-status-upcoming/10 text-status-upcoming' }}">
-
-                            <span class="w-1.5 h-1.5 rounded-full"></span>
-
-                            {{ ucfirst($project->status) }}
-                        </span>
-                    </td>
-
-                </tr>
-
-                @empty
-                <tr>
-                    <td colspan="5" class="text-center py-6 text-text-muted">
-                        No projects found
-                    </td>
-                </tr>
-                @endforelse
-
-            </tbody>
-
-        </table>
-    </div>
-</div>
-              <!-- Row 3 -->
-                       {{--  <tr class="hover:bg-surface-container-low/60 transition-colors">
-                            <td class="px-5 py-3.5">
-                                <div class="flex items-center gap-3">
-                                    <img alt="Sofia Rodriguez"
-                                        class="w-8 h-8 rounded-full object-cover shrink-0 ring-1 ring-secondary-container"
-                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjATARvrwwWrjHhi4FElh2nIfwBWs-smK6v21jaTSiFTxZ9Ig4yc8adR_Yzm6HKDJDhJmi1sQ4rR3F78JaajXt3TQsHkLFFwnD_8m8syiDUAZ6xTTpypOp-dT74s01uWCf8yOtTyDqivxHX5G1cgxYYBp0V8gchdfLkA0MA7QRzSTXzMerbm450rWRSe9L7ICm6HgsRZ_LLdutEcp8bcHoQBUFcVD0_aAIbu6DC6WxWUgkZDUr6Grs1te-mJOHUQaxQLdTrFacAflo" />
-                                    <span class="font-semibold text-[13px] text-on-surface">Sofia
-                                        Rodriguez</span>
-                                </div>
-                            </td>
-                            <td class="px-5 py-3.5 text-[13px] text-on-surface-variant">Botox 20u</td>
-                            <td class="px-5 py-3.5 text-[13px] text-on-surface-variant">02:15 PM</td>
-                            <td class="px-5 py-3.5">
-                                <span
-                                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-status-pending/10 text-status-pending uppercase tracking-wide">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-status-pending"></span>Pending
-                                </span>
-                            </td>
-                            <td class="px-5 py-3.5">
-                                <button
-                                    class="text-on-surface-variant hover:text-primary transition-colors p-1 rounded-lg hover:bg-primary/10">
-                                    <span class="material-symbols-outlined" style="font-size:18px">edit_square</span>
-                                </button>
-                            </td>
-                        </tr>--}}
-                        <!-- Row 4 -->
-                       {{-- <tr class="hover:bg-surface-container-low/60 transition-colors">
-                            <td class="px-5 py-3.5">
-                                <div class="flex items-center gap-3">
-                                    <img alt="James Wilson"
-                                        class="w-8 h-8 rounded-full object-cover shrink-0 ring-1 ring-secondary-container"
-                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnwk7BUHalfs4w3Wv_ybXbySDW9wu8_zNFBQ-cmVo1ofq41pdkEmnMY78OVdcbNFMr8zOxhUBL3iumx7A952205ARNPIc5eCOP-uJGR6AMzOA0sy4wMSGARNve7z7I_uc0ISCijqHhPk1Rg6OI873sb4zxHeJDs4MWDYKH2WNOZdQPKLxh5D819nsi-oTBFqVW4QV45-HX8ClmObsdSlqXqvRq7ZBy6V3ExKb2an3EY6qzt4LyvLdoQ-79BLCh3nPoq4NJUQd51iO6" />
-                                    <span class="font-semibold text-[13px] text-on-surface">James Wilson</span>
-                                </div>
-                            </td>
-                            <td class="px-5 py-3.5 text-[13px] text-on-surface-variant">Consultation</td>
-                            <td class="px-5 py-3.5 text-[13px] text-on-surface-variant">04:00 PM</td>
-                            <td class="px-5 py-3.5">
-                                <span
-                                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-status-cancelled/10 text-status-cancelled uppercase tracking-wide">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-status-cancelled"></span>Cancelled
-                                </span>
-                            </td>
-                            <td class="px-5 py-3.5">
-                                <button
-                                    class="text-on-surface-variant hover:text-primary transition-colors p-1 rounded-lg hover:bg-primary/10">
-                                    <span class="material-symbols-outlined" style="font-size:18px">edit_square</span>
-                                </button>
-                            </td>
-                        </tr>--}}
                     </tbody>
                 </table>
             </div>

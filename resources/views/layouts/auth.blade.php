@@ -85,30 +85,30 @@
 
     {{-- ── Left decorative panel (hidden on mobile) ── --}}
     <div
-        class="auth-panel hidden lg:flex lg:w-[420px] xl:w-[480px] shrink-0 flex-col justify-between p-10 relative overflow-hidden">
+        class="auth-panel hidden lg:flex lg:w-[420px] xl:w-[480px] shrink-0 flex-col  p-10 relative overflow-hidden">
 
         {{-- Logo --}}
         <div class="relative z-10">
-            <img src="{{ asset('assets/images/logo.png') }}" alt="Aura Clinic" class="h-9 w-auto brightness-0 invert" />
+            <img src="{{ asset('assets/images/logo.png') }}" alt="Aura Clinic" class="h-16 w-auto brightness-0 invert" />
         </div>
 
         {{-- Centre illustration / quote --}}
-        <div class="relative z-10 text-white">
+        <div class="relative z-10 text-white mt-10">
             {{-- Abstract orb decoration --}}
             <div class="absolute -top-32 -left-16 w-64 h-64 rounded-full opacity-10"
                 style="background: radial-gradient(circle, #fff 0%, transparent 70%)"></div>
 
-            <p class="text-[13px] font-medium uppercase tracking-[0.15em] text-white/50 mb-4">Aura Aesthetics Clinic</p>
+            <p class="text-[13px] font-medium uppercase tracking-[0.15em] text-white mb-4">BuildSight</p>
             <h2 class="text-3xl font-bold leading-snug mb-4">
-                Streamline your<br>clinic, elevate<br>every experience.
+                Turn your construction sites into
+smart, monitored, and insightful systems.
             </h2>
             <p class="text-white/60 text-[14px] leading-relaxed max-w-xs">
-                One platform for appointments, patients, treatments, and payments — built for modern aesthetics
-                practices.
+               One platform for managing CCTV footage, tracking site activity, and generating intelligent reports & content — built for modern construction management.
             </p>
 
             {{-- Stats row --}}
-            <div class="flex gap-8 mt-10 pt-8 border-t border-white/10">
+           {{-- <div class="flex gap-8 mt-10 pt-8 border-t border-white/10">
                 <div>
                     <p class="text-2xl font-bold">1,240+</p>
                     <p class="text-white/50 text-[12px] mt-0.5">Active Patients</p>
@@ -120,7 +120,7 @@
                 <div>
                     <p class="text-2xl font-bold">24/7</p>
                     <p class="text-white/50 text-[12px] mt-0.5">Support Access</p>
-                </div>
+                </div>--}}
             </div>
         </div>
 
@@ -144,7 +144,7 @@
         </div>
 
         {{-- Footer --}}
-        <div
+        {{--<div
             class="px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-2 border-t border-slate-200 bg-white">
             <p class="text-[11px] text-slate-400">© {{ date('Y') }} Aura Aesthetics Clinic. Professional Edition.
             </p>
@@ -152,7 +152,7 @@
                 <a href="#" class="text-slate-400 hover:text-[#536c77] underline transition-colors">Support</a>
                 <a href="#" class="text-slate-400 hover:text-[#536c77] underline transition-colors">Privacy
                     Policy</a>
-            </div>
+            </div>--}}
         </div>
 
     </div>

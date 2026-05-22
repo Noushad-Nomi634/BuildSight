@@ -1,615 +1,599 @@
 @extends('layouts.app')
+@section('title', $project->name)
 
 @section('content')
 
-    {{--
-    View expects: $project (Project model, eager-loaded with company, cameras, members)
-    All relations are nullable-safe — sections only render when data exists.
---}}
-
-    <div class="space-y-6">
-
-        {{-- ══════════════════════════════════════════
-         PAGE HEADER
-    ══════════════════════════════════════════ --}}
-        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-
-            {{-- Breadcrumb --}}
-            <nav class="flex items-center gap-1.5 text-[12px] text-slate-400 mb-1">
-                <a href="{{ route('company.projects.index') }}" class="hover:text-[#536c77] transition-colors">Projects</a>
+    {{-- ── Breadcrumb + Header ── --}}
+    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+        <div>
+            <div class="flex items-center gap-2 text-sm text-text-muted mb-1 flex-wrap">
+                <span>Dashboard</span>
                 <span class="material-symbols-outlined" style="font-size:14px">chevron_right</span>
-                <span class="text-slate-600 font-medium truncate max-w-[200px]">{{ $project->name }}</span>
-            </nav>
-
-            {{-- Action buttons --}}
-            <div class="flex items-center gap-2 shrink-0">
-                <a href="{{ route('company.projects.edit', $project) }}"
-                    class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:text-[#536c77] hover:border-[#536c77]/40 text-[13px] font-semibold transition-all">
-                    <span class="material-symbols-outlined" style="font-size:16px">edit</span>
-                    Edit
-                </a>
-                <form method="POST" action="{{ route('company.projects.destroy', $project) }}"
-                    onsubmit="return confirm('Delete this project? This cannot be undone.')">
-                    @csrf @method('DELETE')
-                    <button type="submit"
-                        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-red-200 bg-white text-red-500 hover:bg-red-50 text-[13px] font-semibold transition-all">
-                        <span class="material-symbols-outlined" style="font-size:16px">delete</span>
-                        Delete
-                    </button>
-                </form>
+                <a href="{{ route('company.projects.index') }}" class="hover:text-primary transition-colors">Projects</a>
+                <span class="material-symbols-outlined" style="font-size:14px">chevron_right</span>
+                <span class="text-on-surface font-medium truncate max-w-[200px]">{{ $project->name }}</span>
             </div>
+            <h2 class="text-xl font-bold text-on-surface">{{ $project->name }}</h2>
+            @if ($project->project_code)
+                <span
+                    class="text-[11px] font-mono font-bold text-text-muted bg-surface-container-low
+                             border border-secondary-container px-2 py-1 rounded-lg mt-1 inline-block">
+                    {{ $project->project_code }}
+                </span>
+            @endif
         </div>
-
-        {{-- ══════════════════════════════════════════
-         HERO CARD — identity + status
-    ══════════════════════════════════════════ --}}
-        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-
-            {{-- Coloured top bar keyed to status --}}
-            @php
-                $statusMeta = [
-                    'active' => [
-                        'bg' => 'bg-green-500',
-                        'text' => 'Active',
-                        'icon' => 'play_circle',
-                        'pill' => 'bg-green-50 text-green-700 border-green-200',
-                    ],
-                    'planning' => [
-                        'bg' => 'bg-blue-500',
-                        'text' => 'Planning',
-                        'icon' => 'pending',
-                        'pill' => 'bg-blue-50 text-blue-700 border-blue-200',
-                    ],
-                    'on_hold' => [
-                        'bg' => 'bg-amber-500',
-                        'text' => 'On Hold',
-                        'icon' => 'pause_circle',
-                        'pill' => 'bg-amber-50 text-amber-700 border-amber-200',
-                    ],
-                    'completed' => [
-                        'bg' => 'bg-slate-500',
-                        'text' => 'Completed',
-                        'icon' => 'check_circle',
-                        'pill' => 'bg-slate-100 text-slate-600 border-slate-200',
-                    ],
-                    'cancelled' => [
-                        'bg' => 'bg-red-400',
-                        'text' => 'Cancelled',
-                        'icon' => 'cancel',
-                        'pill' => 'bg-red-50 text-red-600 border-red-200',
-                    ],
-                ];
-                $priorityMeta = [
-                    'low' => [
-                        'pill' => 'bg-slate-100 text-slate-500 border-slate-200',
-                        'icon' => 'arrow_downward',
-                        'label' => 'Low',
-                    ],
-                    'medium' => [
-                        'pill' => 'bg-amber-50 text-amber-700 border-amber-200',
-                        'icon' => 'drag_handle',
-                        'label' => 'Medium',
-                    ],
-                    'high' => [
-                        'pill' => 'bg-orange-50 text-orange-600 border-orange-200',
-                        'icon' => 'arrow_upward',
-                        'label' => 'High',
-                    ],
-                    'critical' => [
-                        'pill' => 'bg-red-50 text-red-600 border-red-200',
-                        'icon' => 'priority_high',
-                        'label' => 'Critical',
-                    ],
-                ];
-
-                $s = $statusMeta[$project->status] ?? [
-                    'bg' => 'bg-slate-400',
-                    'text' => ucfirst($project->status ?? 'Unknown'),
-                    'icon' => 'info',
-                    'pill' => 'bg-slate-100 text-slate-600 border-slate-200',
-                ];
-                $p = $priorityMeta[$project->priority] ?? [
-                    'pill' => 'bg-slate-100 text-slate-500 border-slate-200',
-                    'icon' => 'drag_handle',
-                    'label' => ucfirst($project->priority ?? '—'),
-                ];
-
-                // Progress calculation
-                $start = $project->start_date;
-                $end = $project->end_date;
-                $progress = 0;
-                if ($start && $end) {
-                    $total = $start->diffInDays($end);
-                    $elapsed = $start->diffInDays(now()->min($end));
-                    $progress = $total > 0 ? min(100, round(($elapsed / $total) * 100)) : 0;
-                }
-            @endphp
-
-            <div class="h-1.5 w-full {{ $s['bg'] }}"></div>
-
-            <div class="p-6">
-                <div class="flex flex-col md:flex-row md:items-start gap-5">
-
-                    {{-- Icon avatar --}}
-                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
-                        style="background:rgba(83,108,119,0.10)">
-                        <span class="material-symbols-outlined" style="font-size:28px;color:#536c77">apartment</span>
-                    </div>
-
-                    {{-- Title block --}}
-                    <div class="flex-1 min-w-0">
-                        <div class="flex flex-wrap items-center gap-2 mb-1">
-                            <h1 class="text-xl font-bold text-slate-800 leading-tight">{{ $project->name }}</h1>
-                            @if ($project->project_code)
-                                <span
-                                    class="px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-slate-500 text-[11px] font-mono font-semibold">
-                                    {{ $project->project_code }}
-                                </span>
-                            @endif
-                        </div>
-
-                        {{-- Badges row --}}
-                        <div class="flex flex-wrap items-center gap-2 mt-2">
-                            {{-- Status --}}
-                            <span
-                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-[11px] font-bold {{ $s['pill'] }}">
-                                <span class="material-symbols-outlined" style="font-size:13px">{{ $s['icon'] }}</span>
-                                {{ $s['text'] }}
-                            </span>
-
-                            {{-- Priority --}}
-                            @if ($project->priority)
-                                <span
-                                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-[11px] font-bold {{ $p['pill'] }}">
-                                    <span class="material-symbols-outlined"
-                                        style="font-size:13px">{{ $p['icon'] }}</span>
-                                    {{ $p['label'] }} Priority
-                                </span>
-                            @endif
-
-                            {{-- Company --}}
-                            @if ($project->company)
-                                <span
-                                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-slate-200 bg-slate-50 text-slate-600 text-[11px] font-semibold">
-                                    <span class="material-symbols-outlined" style="font-size:13px">business</span>
-                                    {{ $project->company->name }}
-                                </span>
-                            @endif
-                        </div>
-
-                        {{-- Description --}}
-                        @if ($project->description)
-                            <p class="mt-3 text-[13.5px] text-slate-500 leading-relaxed max-w-2xl">
-                                {{ $project->description }}
-                            </p>
-                        @endif
-                    </div>
-
-                    {{-- Timeline + progress (right side) --}}
-                    @if ($project->start_date || $project->end_date)
-                        <div class="shrink-0 md:text-right min-w-[160px]">
-                            @if ($project->start_date && $project->end_date)
-                                <p class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold mb-1">Timeline
-                                </p>
-                                <p class="text-[13px] font-semibold text-slate-700">
-                                    {{ $project->start_date->format('M d, Y') }}
-                                </p>
-                                <p class="text-[12px] text-slate-400 flex md:justify-end items-center gap-1 mt-0.5">
-                                    <span class="material-symbols-outlined" style="font-size:13px">arrow_downward</span>
-                                    {{ $project->end_date->format('M d, Y') }}
-                                </p>
-                                {{-- Progress bar --}}
-                                <div class="mt-3">
-                                    <div class="flex justify-between items-center mb-1">
-                                        <span class="text-[10px] text-slate-400 uppercase tracking-wider">Progress</span>
-                                        <span class="text-[12px] font-bold text-[#536c77]">{{ $progress }}%</span>
-                                    </div>
-                                    <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                        <div class="h-full rounded-full transition-all"
-                                            style="width:{{ $progress }}%; background:#536c77"></div>
-                                    </div>
-                                </div>
-                            @elseif($project->start_date)
-                                <p class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold mb-1">Started
-                                </p>
-                                <p class="text-[13px] font-semibold text-slate-700">
-                                    {{ $project->start_date->format('M d, Y') }}</p>
-                            @elseif($project->end_date)
-                                <p class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold mb-1">Due</p>
-                                <p class="text-[13px] font-semibold text-slate-700">
-                                    {{ $project->end_date->format('M d, Y') }}</p>
-                            @endif
-                        </div>
-                    @endif
-
-                </div>
-            </div>
-        </div>
-
-        {{-- ══════════════════════════════════════════
-         TWO-COLUMN BODY
-    ══════════════════════════════════════════ --}}
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-
-            {{-- ── LEFT COLUMN (2/3) ── --}}
-            <div class="xl:col-span-2 space-y-6">
-
-                {{-- Location details --}}
-                @php
-                    $hasLocation = $project->address_1 || $project->city ?? null || $project->country || $project->lat;
-                @endphp
-                @if ($hasLocation)
-                    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-                        <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[#536c77]" style="font-size:18px">location_on</span>
-                            <h2 class="font-bold text-[14px] text-slate-700">Location</h2>
-                        </div>
-                        <div class="p-5">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                @if ($project->address_1)
-                                    <div>
-                                        <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">
-                                            Address</p>
-                                        <p class="text-[13.5px] text-slate-700 leading-relaxed">
-                                            {{ $project->address_1 }}<br>
-                                            @if ($project->address_2)
-                                                {{ $project->address_2 }}<br>
-                                            @endif
-                                            @if ($project->state_province)
-                                                {{ $project->state_province }},
-                                            @endif
-                                            @if ($project->postal_code)
-                                                {{ $project->postal_code }}
-                                            @endif
-                                        </p>
-                                    </div>
-                                @endif
-                                @if ($project->country)
-                                    <div>
-                                        <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">
-                                            Country</p>
-                                        <p class="text-[13.5px] text-slate-700">{{ $project->country }}</p>
-                                    </div>
-                                @endif
-                                @if ($project->lat && $project->lng)
-                                    <div class="sm:col-span-2">
-                                        <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2">
-                                            Coordinates</p>
-                                        <div class="flex items-center gap-3">
-                                            <span
-                                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-[12px] font-mono text-slate-600">
-                                                <span class="material-symbols-outlined text-slate-400"
-                                                    style="font-size:14px">my_location</span>
-                                                {{ $project->lat }}, {{ $project->lng }}
-                                            </span>
-                                            <a href="https://maps.google.com/?q={{ $project->lat }},{{ $project->lng }}"
-                                                target="_blank"
-                                                class="inline-flex items-center gap-1 text-[12px] text-[#536c77] hover:underline font-medium transition-colors">
-                                                <span class="material-symbols-outlined"
-                                                    style="font-size:14px">open_in_new</span>
-                                                Open in Maps
-                                            </a>
-                                        </div>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
-                {{-- Cameras --}}
-                @if ($project->cameras && $project->cameras->count() > 0)
-                    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-                        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <span class="material-symbols-outlined text-[#536c77]"
-                                    style="font-size:18px">videocam</span>
-                                <h2 class="font-bold text-[14px] text-slate-700">Cameras</h2>
-                                <span
-                                    class="ml-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 text-[11px] font-bold">
-                                    {{ $project->cameras->count() }}
-                                </span>
-                            </div>
-                            <a href="#" class="text-[12px] text-[#536c77] hover:underline font-medium">Manage</a>
-                        </div>
-                        <div class="divide-y divide-slate-100">
-                            @foreach ($project->cameras as $camera)
-                                <div class="flex items-center gap-4 px-5 py-3.5 hover:bg-slate-50 transition-colors">
-                                    <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-                                        style="background:rgba(83,108,119,0.10)">
-                                        <span class="material-symbols-outlined"
-                                            style="font-size:16px;color:#536c77">camera_indoor</span>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-[13px] font-semibold text-slate-700 truncate">
-                                            {{ $camera->name ?? 'Camera ' . $loop->iteration }}
-                                        </p>
-                                        @if (isset($camera->serial_number) || isset($camera->location))
-                                            <p class="text-[11px] text-slate-400 mt-0.5">
-                                                {{ $camera->serial_number ?? '' }}
-                                                @if (isset($camera->location))
-                                                    · {{ $camera->location }}
-                                                @endif
-                                            </p>
-                                        @endif
-                                    </div>
-                                    @if (isset($camera->status))
-                                        @php
-                                            $camStatus = match ($camera->status) {
-                                                'online' => 'bg-green-50 text-green-600 border-green-200',
-                                                'offline' => 'bg-red-50 text-red-500 border-red-200',
-                                                default => 'bg-slate-100 text-slate-500 border-slate-200',
-                                            };
-                                        @endphp
-                                        <span
-                                            class="px-2 py-0.5 rounded-full border text-[10px] font-bold uppercase {{ $camStatus }}">
-                                            {{ $camera->status }}
-                                        </span>
-                                    @endif
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-
-                {{-- Team Members --}}
-                @if ($project->members && $project->members->count() > 0)
-                    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-                        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <span class="material-symbols-outlined text-[#536c77]" style="font-size:18px">group</span>
-                                <h2 class="font-bold text-[14px] text-slate-700">Team Members</h2>
-                                <span
-                                    class="ml-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 text-[11px] font-bold">
-                                    {{ $project->members->count() }}
-                                </span>
-                            </div>
-                            <a href="#" class="text-[12px] text-[#536c77] hover:underline font-medium">Manage
-                                team</a>
-                        </div>
-                        <div class="p-5">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                @foreach ($project->members as $member)
-                                    @php
-                                        $roleMeta = [
-                                            'owner' => 'bg-[#536c77]/10 text-[#536c77] border-[#536c77]/20',
-                                            'admin' => 'bg-orange-50 text-orange-600 border-orange-200',
-                                            'editor' => 'bg-blue-50 text-blue-600 border-blue-200',
-                                            'viewer' => 'bg-slate-100 text-slate-500 border-slate-200',
-                                        ];
-                                        $roleClass =
-                                            $roleMeta[$member->pivot->role ?? ''] ??
-                                            'bg-slate-100 text-slate-500 border-slate-200';
-                                        $initials = collect(explode(' ', $member->name))
-                                            ->map(fn($w) => strtoupper($w[0] ?? ''))
-                                            ->take(2)
-                                            ->join('');
-                                    @endphp
-                                    <div
-                                        class="flex items-center gap-3 p-3 rounded-xl border border-slate-100 bg-slate-50 hover:border-slate-200 transition-colors">
-                                        {{-- Avatar --}}
-                                        @if ($member->avatar ?? null)
-                                            <img src="{{ $member->avatar }}" alt="{{ $member->name }}"
-                                                class="w-9 h-9 rounded-full object-cover shrink-0 ring-2 ring-white" />
-                                        @else
-                                            <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-white text-[12px] font-bold"
-                                                style="background:#536c77">{{ $initials }}</div>
-                                        @endif
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-[13px] font-semibold text-slate-700 truncate">
-                                                {{ $member->name }}</p>
-                                            <p class="text-[11px] text-slate-400 truncate">{{ $member->email }}</p>
-                                        </div>
-                                        @if ($member->pivot->role)
-                                            <span
-                                                class="shrink-0 px-2 py-0.5 rounded-full border text-[10px] font-bold capitalize {{ $roleClass }}">
-                                                {{ $member->pivot->role }}
-                                            </span>
-                                        @endif
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
-                {{-- Empty state — shown only when no related data at all --}}
-                @if (
-                    (!$project->cameras || $project->cameras->count() === 0) &&
-                        (!$project->members || $project->members->count() === 0) &&
-                        !$hasLocation)
-                    <div
-                        class="bg-white rounded-2xl border border-dashed border-slate-300 p-10 flex flex-col items-center justify-center text-center">
-                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
-                            style="background:rgba(83,108,119,0.08)">
-                            <span class="material-symbols-outlined"
-                                style="font-size:24px;color:#536c77">inventory_2</span>
-                        </div>
-                        <p class="font-semibold text-slate-600 text-[14px] mb-1">No related data yet</p>
-                        <p class="text-[12.5px] text-slate-400 max-w-xs leading-relaxed">
-                            Add cameras, team members, or location details to see them here.
-                        </p>
-                    </div>
-                @endif
-
-            </div>{{-- /left column --}}
-
-            {{-- ── RIGHT COLUMN (1/3) — sidebar meta ── --}}
-            <div class="space-y-4">
-
-                {{-- Project details card --}}
-                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-                    <div class="px-5 py-4 border-b border-slate-100">
-                        <h2 class="font-bold text-[14px] text-slate-700">Project Details</h2>
-                    </div>
-                    <div class="p-5 space-y-4">
-
-                        {{-- Project Code --}}
-                        @if ($project->project_code)
-                            <div>
-                                <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Project
-                                    Code</p>
-                                <p class="text-[13px] font-mono font-semibold text-slate-700">{{ $project->project_code }}
-                                </p>
-                            </div>
-                        @endif
-
-                        {{-- Company --}}
-                        {{-- @if ($project->company)
-                            <div>
-                                <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Company
-                                </p>
-                                <a href="{{ route('companies.show', $project->company) }}"
-                                    class="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#536c77] hover:underline">
-                                    <span class="material-symbols-outlined" style="font-size:15px">business</span>
-                                    {{ $project->company->name }}
-                                </a>
-                            </div>
-                        @endif --}}
-
-                        {{-- Alerts email --}}
-                        @if ($project->alerts_email)
-                            <div>
-                                <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Alert
-                                    Emails</p>
-                                <div class="space-y-1">
-                                    @foreach (explode(',', $project->alerts_email) as $email)
-                                        <div class="flex items-center gap-1.5">
-                                            <span class="material-symbols-outlined text-slate-400"
-                                                style="font-size:14px">mail</span>
-                                            <p class="text-[12.5px] text-slate-600 break-all">{{ trim($email) }}</p>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
-
-                        {{-- Dates --}}
-                        @if ($project->start_date || $project->end_date)
-                            <div>
-                                <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2">Timeline
-                                </p>
-                                <div class="space-y-2">
-                                    @if ($project->start_date)
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-[12px] text-slate-500 flex items-center gap-1">
-                                                <span class="material-symbols-outlined text-slate-400"
-                                                    style="font-size:14px">play_arrow</span>
-                                                Start
-                                            </span>
-                                            <span
-                                                class="text-[12px] font-semibold text-slate-700">{{ $project->start_date->format('M d, Y') }}</span>
-                                        </div>
-                                    @endif
-                                    @if ($project->end_date)
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-[12px] text-slate-500 flex items-center gap-1">
-                                                <span class="material-symbols-outlined text-slate-400"
-                                                    style="font-size:14px">flag</span>
-                                                End
-                                            </span>
-                                            <span
-                                                class="text-[12px] font-semibold text-slate-700">{{ $project->end_date->format('M d, Y') }}</span>
-                                        </div>
-                                    @endif
-                                    @if ($project->start_date && $project->end_date)
-                                        <div class="flex items-center justify-between pt-1 border-t border-slate-100">
-                                            <span class="text-[12px] text-slate-500 flex items-center gap-1">
-                                                <span class="material-symbols-outlined text-slate-400"
-                                                    style="font-size:14px">timelapse</span>
-                                                Duration
-                                            </span>
-                                            <span class="text-[12px] font-semibold text-slate-700">
-                                                {{ $project->start_date->diffInDays($project->end_date) }} days
-                                            </span>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                        @endif
-
-                        {{-- Created by --}}
-                        @if ($project->created_by)
-                            <div class="pt-1 border-t border-slate-100">
-                                <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Created
-                                    by</p>
-                                <p class="text-[12.5px] text-slate-600">
-                                    User #{{ $project->created_by }}
-                                </p>
-                            </div>
-                        @endif
-
-                        {{-- Timestamps --}}
-                        <div class="pt-1 border-t border-slate-100 space-y-1.5">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[11px] text-slate-400">Created</span>
-                                <span
-                                    class="text-[11px] text-slate-500">{{ $project->created_at->format('M d, Y') }}</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-[11px] text-slate-400">Updated</span>
-                                <span
-                                    class="text-[11px] text-slate-500">{{ $project->updated_at->diffForHumans() }}</span>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                {{-- Quick stats --}}
-                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-                    <div class="px-5 py-4 border-b border-slate-100">
-                        <h2 class="font-bold text-[14px] text-slate-700">Quick Stats</h2>
-                    </div>
-                    <div class="p-5 grid grid-cols-2 gap-3">
-                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center">
-                            <p class="text-xl font-bold text-[#536c77]">
-                                {{ $project->cameras ? $project->cameras->count() : 0 }}
-                            </p>
-                            <p class="text-[11px] text-slate-500 mt-0.5">Cameras</p>
-                        </div>
-                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center">
-                            <p class="text-xl font-bold text-[#536c77]">
-                                {{ $project->members ? $project->members->count() : 0 }}
-                            </p>
-                            <p class="text-[11px] text-slate-500 mt-0.5">Members</p>
-                        </div>
-                        @if ($project->start_date && $project->end_date)
-                            <div class="col-span-2 p-3 rounded-xl bg-slate-50 border border-slate-200 text-center">
-                                <p class="text-xl font-bold text-[#536c77]">{{ $progress }}%</p>
-                                <p class="text-[11px] text-slate-500 mt-0.5">Timeline Progress</p>
-                                <div class="mt-2 w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                                    <div class="h-full rounded-full"
-                                        style="width:{{ $progress }}%; background:#536c77"></div>
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-                {{-- Danger zone --}}
-                <div class="bg-white rounded-2xl border border-red-100 overflow-hidden">
-                    <div class="px-5 py-4 border-b border-red-100">
-                        <h2 class="font-bold text-[14px] text-red-600">Danger Zone</h2>
-                    </div>
-                    <div class="p-5 space-y-3">
-                        <p class="text-[12px] text-slate-500 leading-relaxed">
-                            Deleting this project is permanent and cannot be undone. All related cameras and member
-                            associations will be removed.
-                        </p>
-                        <form method="POST" action="{{ route('company.projects.destroy', $project) }}"
-                            onsubmit="return confirm('Are you sure? This will permanently delete the project and all related data.')">
-                            @csrf @method('DELETE')
-                            <button type="submit"
-                                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-[13px] font-semibold hover:bg-red-100 transition-all">
-                                <span class="material-symbols-outlined" style="font-size:16px">delete_forever</span>
-                                Delete Project
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+        <div class="flex items-center gap-2 flex-wrap">
+            <a href="{{ route('company.projects.edit', $project) }}"
+                class="flex items-center gap-2 bg-surface-white hover:bg-surface-container-low border
+                       border-secondary-container text-on-surface text-[13px] font-bold px-4 py-2.5
+                       rounded-xl transition-all duration-200 active:scale-[0.98] shadow-sm w-fit">
+                <span class="material-symbols-outlined" style="font-size:17px">edit_square</span>
+                Edit
+            </a>
+            <form method="POST" action="{{ route('company.projects.destroy', $project) }}"
+                onsubmit="return confirm('Delete {{ addslashes($project->name) }}?')">
+                @csrf
+                @method('DELETE')
+                <button type="submit"
+                    class="flex items-center gap-2 bg-surface-white hover:bg-status-cancelled/10 border
+                           border-secondary-container hover:border-status-cancelled/30 text-on-surface
+                           hover:text-status-cancelled text-[13px] font-bold px-4 py-2.5 rounded-xl
+                           transition-all duration-200 active:scale-[0.98] shadow-sm w-fit">
+                    <span class="material-symbols-outlined" style="font-size:17px">delete</span>
+                    Delete
+                </button>
+            </form>
         </div>
     </div>
 
+    {{-- ── Status / Priority / Timeline chips ── --}}
+    @php
+        $statusMap = [
+            'active' => ['bg-status-completed/10 text-status-completed', 'bg-status-completed'],
+            'planning' => ['bg-status-upcoming/10 text-status-upcoming', 'bg-status-upcoming'],
+            'on_hold' => ['bg-status-pending/10 text-status-pending', 'bg-status-pending'],
+            'completed' => ['bg-primary/10 text-primary', 'bg-primary'],
+            'cancelled' => ['bg-status-cancelled/10 text-status-cancelled', 'bg-status-cancelled'],
+        ];
+        $priorityMap = [
+            'low' => ['bg-secondary/10 text-secondary', 'bg-secondary'],
+            'medium' => ['bg-status-upcoming/10 text-status-upcoming', 'bg-status-upcoming'],
+            'high' => ['bg-status-pending/10 text-status-pending', 'bg-status-pending'],
+            'urgent' => ['bg-status-cancelled/10 text-status-cancelled', 'bg-status-cancelled'],
+        ];
+        [$statusBadge, $statusDot] = $statusMap[$project->status] ?? ['bg-secondary/10 text-secondary', 'bg-secondary'];
+        [$prioBadge, $prioDot] = $priorityMap[$project->priority] ?? ['bg-secondary/10 text-secondary', 'bg-secondary'];
+    @endphp
+
+    <div class="flex flex-wrap items-center gap-2">
+        {{-- Status --}}
+        <span
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px]
+                     font-bold uppercase tracking-wide {{ $statusBadge }}">
+            <span class="w-1.5 h-1.5 rounded-full {{ $statusDot }}"></span>
+            {{ str_replace('_', ' ', $project->status) }}
+        </span>
+        {{-- Priority --}}
+        <span
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px]
+                     font-bold uppercase tracking-wide {{ $prioBadge }}">
+            <span class="w-1.5 h-1.5 rounded-full {{ $prioDot }}"></span>
+            {{ $project->priority }} priority
+        </span>
+        {{-- Timeline --}}
+        @if ($project->start_date || $project->end_date)
+            <span
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px]
+                         font-bold bg-surface-container-low border border-secondary-container text-text-muted">
+                <span class="material-symbols-outlined" style="font-size:13px">calendar_today</span>
+                {{ $project->start_date?->format('M d, Y') ?? '—' }}
+                &rarr;
+                {{ $project->end_date?->format('M d, Y') ?? 'Ongoing' }}
+            </span>
+        @endif
+        {{-- FTP folder --}}
+        @if ($project->ftp_folder)
+            <span
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px]
+                         font-bold bg-surface-container-low border border-secondary-container text-text-muted font-mono">
+                <span class="material-symbols-outlined" style="font-size:13px">folder</span>
+                {{ $project->ftp_folder }}
+            </span>
+        @endif
+    </div>
+
+    {{-- ── Two-column detail layout ── --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+        {{-- LEFT: Details card + Description + Location ── --}}
+        <div class="lg:col-span-2 flex flex-col gap-4">
+
+            {{-- Description --}}
+            @if ($project->description)
+                <div class="bg-surface-white rounded-2xl shadow-sm border border-secondary-container/60 p-5">
+                    <h3 class="font-bold text-[14px] text-on-surface mb-2 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary" style="font-size:17px">description</span>
+                        Description
+                    </h3>
+                    <p class="text-[13px] text-text-muted leading-relaxed whitespace-pre-line">{{ $project->description }}
+                    </p>
+                </div>
+            @endif
+
+            {{-- Project details --}}
+            <div class="bg-surface-white rounded-2xl shadow-sm border border-secondary-container/60 p-5">
+                <h3 class="font-bold text-[14px] text-on-surface mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary" style="font-size:17px">info</span>
+                    Project Details
+                </h3>
+                <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+
+                    @php
+                        $details = [
+                            ['label' => 'Project Name', 'value' => $project->name, 'icon' => 'work'],
+                            ['label' => 'Project Code', 'value' => $project->project_code, 'icon' => 'tag'],
+                            ['label' => 'FTP Folder', 'value' => $project->ftp_folder, 'icon' => 'folder'],
+                            ['label' => 'Alerts Email', 'value' => $project->alerts_email, 'icon' => 'mail'],
+                            [
+                                'label' => 'Start Date',
+                                'value' => $project->start_date?->format('M d, Y'),
+                                'icon' => 'event',
+                            ],
+                            [
+                                'label' => 'End Date',
+                                'value' => $project->end_date?->format('M d, Y') ?? 'Ongoing',
+                                'icon' => 'event_available',
+                            ],
+                            [
+                                'label' => 'Created',
+                                'value' => $project->created_at->format('M d, Y'),
+                                'icon' => 'schedule',
+                            ],
+                            [
+                                'label' => 'Last Updated',
+                                'value' => $project->updated_at->format('M d, Y'),
+                                'icon' => 'update',
+                            ],
+                        ];
+                    @endphp
+
+                    @foreach ($details as $d)
+                        <div class="flex items-start gap-3">
+                            <div class="p-1.5 bg-primary/10 rounded-lg mt-0.5 shrink-0">
+                                <span class="material-symbols-outlined text-primary"
+                                    style="font-size:14px">{{ $d['icon'] }}</span>
+                            </div>
+                            <div>
+                                <dt class="text-[10px] font-bold text-text-muted uppercase tracking-wide">
+                                    {{ $d['label'] }}</dt>
+                                <dd class="text-[13px] text-on-surface font-medium mt-0.5">
+                                    {{ $d['value'] ?? '—' }}
+                                </dd>
+                            </div>
+                        </div>
+                    @endforeach
+
+                </dl>
+            </div>
+
+            {{-- Location --}}
+            @if ($project->address_1 || $project->lat)
+                <div class="bg-surface-white rounded-2xl shadow-sm border border-secondary-container/60 p-5">
+                    <h3 class="font-bold text-[14px] text-on-surface mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary" style="font-size:17px">location_on</span>
+                        Location
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+                        @foreach ([['Address Line 1', $project->address_1], ['Address Line 2', $project->address_2], ['Country', $project->country], ['State / Province', $project->state_province], ['Postal Code', $project->postal_code], ['Latitude', $project->lat], ['Longitude', $project->lng]] as [$label, $value])
+                            @if ($value)
+                                <div>
+                                    <dt class="text-[10px] font-bold text-text-muted uppercase tracking-wide">
+                                        {{ $label }}</dt>
+                                    <dd class="text-[13px] text-on-surface font-medium mt-0.5">{{ $value }}</dd>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                    @if ($project->lat && $project->lng)
+                        <a href="https://maps.google.com/?q={{ $project->lat }},{{ $project->lng }}" target="_blank"
+                            class="mt-4 inline-flex items-center gap-1.5 text-[12px] font-bold text-primary
+                                   hover:underline transition-colors">
+                            <span class="material-symbols-outlined" style="font-size:14px">open_in_new</span>
+                            View on Google Maps
+                        </a>
+                    @endif
+                </div>
+            @endif
+
+        </div>
+
+        {{-- RIGHT: Cameras card + Members card ── --}}
+        {{-- RIGHT COLUMN --}}
+        <div class="flex flex-col gap-4">
+
+            {{-- CAMERA CARD --}}
+            {{-- <div class="bg-surface-white rounded-2xl shadow-sm border border-secondary-container/60 overflow-hidden">
+
+                <div class="px-5 py-4 border-b flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">videocam</span>
+                        <h3 class="font-bold text-[14px]">Cameras</h3>
+                    </div>
+
+                    <span class="text-[11px] font-bold text-text-muted bg-surface-container-low px-2 py-0.5 rounded-full">
+                        {{ $project->cameras->count() }}
+                    </span>
+                </div>
+
+                @if ($project->cameras->isEmpty())
+                    <div class="px-5 py-6 text-text-muted text-sm">
+                        No cameras assigned yet.
+                    </div>
+                @else
+                    <ul class="divide-y divide-secondary-container/70">
+                        @foreach ($project->cameras as $camera)
+                            <li class="px-5 py-3 flex items-center gap-3">
+                                <span class="material-symbols-outlined text-primary">videocam</span>
+                                <p class="text-[13px] font-semibold">{{ $camera->name }}</p>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+
+            </div> --}}
+
+            {{-- MEMBERS CARD --}}
+
+
+
+            <div class="bg-surface-white rounded-2xl shadow-sm border border-secondary-container/60 overflow-hidden">
+                {{-- HEADER --}}
+                <div class="px-5 py-4 border-b flex items-center justify-between">
+
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">videocam</span>
+                        <h3 class="font-bold text-[14px]">Cameras</h3>
+
+                        {{-- ➕ ADD BUTTON --}}
+                        <button type="button" onclick="openCameraModal({{ $project->id }})"
+                            class="ml-2 p-1.5 rounded-lg hover:bg-blue-100 text-blue-600" title="Add Camera">
+
+                            <span class="material-symbols-outlined" style="font-size:18px">
+                                add_circle
+                            </span>
+                        </button>
+                    </div>
+
+                    <span class="text-[11px] font-bold text-text-muted bg-surface-container-low px-2 py-0.5 rounded-full">
+                        {{ $project->cameras->count() }}
+                    </span>
+
+                </div>
+
+                {{-- BODY --}}
+                @if ($project->cameras->isEmpty())
+
+                    <div class="px-5 py-6 text-text-muted text-sm">
+                        No cameras assigned yet.
+                    </div>
+                @else
+                    <ul class="divide-y divide-secondary-container/70">
+
+                        @foreach ($project->cameras as $camera)
+                            <li class="px-5 py-3 flex items-center justify-between">
+
+                                {{-- LEFT --}}
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-primary">videocam</span>
+                                    <p class="text-[13px] font-semibold">{{ $camera->name }}</p>
+                                </div>
+
+                                {{-- RIGHT ACTIONS --}}
+                                <div class="flex items-center gap-2">
+
+                                    {{-- VIEW --}}
+                                    <a href="{{ route('company.cameras.show', $camera->id) }}"
+                                        class="p-1.5 rounded-lg hover:bg-green-100 text-green-600" title="View">
+                                        <span class="material-symbols-outlined" style="font-size:18px">visibility</span>
+                                    </a>
+
+                                    {{-- EDIT --}}
+                                    <a href="{{ route('company.cameras.edit', $camera->id) }}"
+                                        class="p-1.5 rounded-lg hover:bg-yellow-100 text-yellow-600" title="Edit">
+                                        <span class="material-symbols-outlined" style="font-size:18px">edit</span>
+                                    </a>
+
+                                    {{-- DELETE --}}
+                                    <form method="POST" action="{{ route('company.cameras.destroy', $camera->id) }}"
+                                        onsubmit="return confirm('Delete this camera?')">
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="submit" class="p-1.5 rounded-lg hover:bg-red-100 text-red-600"
+                                            title="Delete">
+                                            <span class="material-symbols-outlined" style="font-size:18px">delete</span>
+                                        </button>
+                                    </form>
+
+                                </div>
+
+                            </li>
+                        @endforeach
+
+                    </ul>
+
+                @endif
+
+            </div>
+            <div class="bg-surface-white rounded-2xl shadow-sm border border-secondary-container/60 overflow-hidden">
+
+                <div class="px-5 py-4 border-b flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">group</span>
+                        <h3 class="font-bold text-[14px]">Members</h3>
+                    </div>
+
+                    <span class="text-[11px] font-bold text-text-muted bg-surface-container-low px-2 py-0.5 rounded-full">
+                        {{ $project->members->count() }}
+                    </span>
+                </div>
+
+                @if ($project->members->isEmpty())
+                    <div class="px-5 py-6 text-text-muted text-sm">
+                        No members assigned yet.
+                    </div>
+                @else
+                    <ul class="divide-y divide-secondary-container/70">
+                        @foreach ($project->members as $member)
+                            <li class="px-5 py-3 flex items-center gap-3">
+
+                                @php
+                                    $initials = collect(explode(' ', $member->name))
+                                        ->map(fn($w) => strtoupper($w[0] ?? ''))
+                                        ->take(2)
+                                        ->join('');
+                                @endphp
+
+                                <div
+                                    class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-[11px] font-bold">
+                                    {{ $initials }}
+                                </div>
+
+                                <div>
+                                    <p class="text-[13px] font-semibold">{{ $member->name }}</p>
+                                    <p class="text-[11px] text-text-muted">{{ $member->email }}</p>
+                                </div>
+
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+
+            </div>
+        </div>
+        {{-- CAMERA CARD --}}
+
+
+        {{-- @if ($project->cameras->isEmpty())
+            <div class="px-5 py-8 flex flex-col items-center gap-2 text-center">
+                <div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center">
+                    <span class="material-symbols-outlined text-text-muted" style="font-size:22px">videocam_off</span>
+                </div>
+                <p class="text-[12px] text-text-muted">No cameras assigned yet.</p>
+            </div>
+        @else
+            <ul class="divide-y divide-secondary-container/70">
+                @foreach ($project->cameras as $camera)
+                    <li class="px-5 py-3 flex items-center gap-3 hover:bg-surface-container-low/60 transition-colors">
+                        <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-primary" style="font-size:16px">videocam</span>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[13px] font-semibold text-on-surface truncate">{{ $camera->name }}</p>
+                            @if (isset($camera->status))
+                                <p class="text-[11px] text-text-muted">{{ $camera->status }}</p>
+                            @endif
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+        @endif --}}
+    </div>
+
+    {{-- Members --}}
+    {{-- <div class="bg-surface-white rounded-2xl shadow-sm border border-secondary-container/60 overflow-hidden">
+        <div class="px-5 py-4 border-b border-secondary-container flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary" style="font-size:17px">group</span>
+                <h3 class="font-bold text-[14px] text-on-surface">Members</h3>
+            </div>
+            <span
+                class="text-[11px] font-bold text-text-muted bg-surface-container-low
+                                 border border-secondary-container px-2 py-0.5 rounded-full">
+                {{ $project->members->count() }}
+            </span>
+        </div>
+
+        @if ($project->members->isEmpty())
+            <div class="px-5 py-8 flex flex-col items-center gap-2 text-center">
+                <div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center">
+                    <span class="material-symbols-outlined text-text-muted" style="font-size:22px">person_off</span>
+                </div>
+                <p class="text-[12px] text-text-muted">No members assigned yet.</p>
+            </div>
+        @else
+            <ul class="divide-y divide-secondary-container/70">
+                @foreach ($project->members as $member)
+                    <li class="px-5 py-3 flex items-center gap-3 hover:bg-surface-container-low/60 transition-colors">
+                        @php
+                            $initials = collect(explode(' ', $member->name))
+                                ->map(fn($w) => strtoupper($w[0] ?? ''))
+                                ->take(2)
+                                ->join('');
+                        @endphp
+                        <div
+                            class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center
+                                            text-primary text-[11px] font-bold shrink-0">
+                            {{ $initials }}
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-[13px] font-semibold text-on-surface truncate">{{ $member->name }}</p>
+                            <p class="text-[11px] text-text-muted truncate">{{ $member->email }}</p>
+                        </div>
+                        @if ($member->pivot->role)
+                            <span
+                                class="text-[10px] font-bold uppercase tracking-wide text-text-muted
+                                                 bg-surface-container-low border border-secondary-container
+                                                 px-2 py-0.5 rounded-full shrink-0">
+                                {{ $member->pivot->role }}
+                            </span>
+                        @endif
+                    </li>
+                @endforeach
+            </ul>
+        @endif
+    </div> --}}
+
+    </div>
+    </div>
+
+    {{-- CAMERA MODAL --}}
+    <div id="cameraModal" class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50">
+
+        <div onclick="event.stopPropagation()" class="bg-white w-full max-w-lg rounded-2xl shadow-lg overflow-hidden">
+
+            {{-- HEADER --}}
+            <div class="px-5 py-3 border-b flex justify-between items-center">
+                <h3 class="font-bold text-on-surface">Add Camera</h3>
+
+                <button onclick="closeCameraModal()" class="text-text-muted hover:text-red-500 text-lg">
+                    ✕
+                </button>
+            </div>
+
+            {{-- FORM --}}
+            <form method="POST" action="{{ route('company.cameras.store') }}" class="p-6 space-y-4">
+                @csrf
+
+                <input type="hidden" name="project_id" id="camera_project_id">
+
+                {{-- Title --}}
+                <div class="text-center mb-2">
+                    <h2 class="text-lg font-bold text-on-surface">Add Camera</h2>
+                    <p class="text-xs text-text-muted">Project me new camera assign karein</p>
+                </div>
+
+                {{-- Camera Name --}}
+                <div>
+                    <label class="text-xs font-semibold text-text-muted">Camera Name</label>
+                    <input type="text" name="name" placeholder="e.g. Front Gate Camera"
+                        class="w-full mt-1 px-3 py-2 border border-secondary-container rounded-xl
+                   focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none text-sm"
+                        required>
+                </div>
+
+                {{-- IP + Port --}}
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-semibold text-text-muted">IP Address</label>
+                        <input type="text" name="ip_address" placeholder="192.168.1.1"
+                            class="w-full mt-1 px-3 py-2 border border-secondary-container rounded-xl
+                       focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none text-sm">
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-semibold text-text-muted">Port</label>
+                        <input type="number" name="port" placeholder="8080"
+                            class="w-full mt-1 px-3 py-2 border border-secondary-container rounded-xl
+                       focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none text-sm">
+                    </div>
+                </div>
+
+                {{-- Username --}}
+                <div>
+                    <label class="text-xs font-semibold text-text-muted">Username</label>
+                    <input type="text" name="username" placeholder="admin"
+                        class="w-full mt-1 px-3 py-2 border border-secondary-container rounded-xl
+                   focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none text-sm">
+                </div>
+
+                {{-- Password --}}
+                <div>
+                    <label class="text-xs font-semibold text-text-muted">Password</label>
+                    <input type="password" name="password" placeholder="••••••••"
+                        class="w-full mt-1 px-3 py-2 border border-secondary-container rounded-xl
+                   focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none text-sm">
+                </div>
+
+                {{-- Snapshot URL --}}
+                <div>
+                    <label class="text-xs font-semibold text-text-muted">Snapshot URL</label>
+                    <input type="text" name="snapshot_url" placeholder="http://..."
+                        class="w-full mt-1 px-3 py-2 border border-secondary-container rounded-xl
+                   focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none text-sm">
+                </div>
+
+                {{-- Upload Method --}}
+                <div>
+                    <label class="text-xs font-semibold text-text-muted">Upload Method</label>
+                    <select name="upload_method" class="w-full border rounded-lg p-2">
+                        <option value="ftp">FTP</option>
+                        <option value="http">HTTP</option>
+                        <option value="onvif">ONVIF</option>
+                    </select>
+                </div>
+
+                {{-- Active Checkbox --}}
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" name="is_active" value="1"
+                        class="w-4 h-4 text-primary border-secondary-container rounded">
+                    <label class="text-sm text-text-muted">Active Camera</label>
+                </div>
+
+                {{-- Buttons --}}
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeCameraModal()"
+                        class="w-1/2 py-2 rounded-xl border border-secondary-container text-text-muted hover:bg-surface-container-low transition">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                        class="w-1/2 py-2 rounded-xl bg-primary text-white font-semibold hover:bg-primary/90 transition">
+                        Save Camera
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openCameraModal(projectId) {
+            document.getElementById('camera_project_id').value = projectId;
+
+            const modal = document.getElementById('cameraModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeCameraModal() {
+            const modal = document.getElementById('cameraModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // ✅ better outside click handling
+        document.getElementById('cameraModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCameraModal();
+            }
+        });
+
+        // ✅ ESC key close (professional UX)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeCameraModal();
+            }
+        });
+    </script>
 @endsection

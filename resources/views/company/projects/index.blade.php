@@ -140,7 +140,7 @@
                                 'urgent' => 'bg-status-cancelled',
                             ];
                         @endphp
-                        <tr class="hover:bg-surface-container-low/60 transition-colors">
+                        <tr class="hover:bg-surface-container-low/60 transition-colors" >
 
                             {{-- Project name + address --}}
                             <td class="px-5 py-4">
@@ -225,34 +225,39 @@
                             </td>
 
                             {{-- Actions --}}
-                            <td class="px-5 py-4">
-                                <div class="flex items-center justify-end gap-1">
-                                    <a href="{{ route('company.projects.show', $project) }}"
-                                        class="p-1.5 rounded-lg hover:bg-primary/10 text-text-muted hover:text-primary
-                                               transition-colors"
-                                        title="View">
-                                        <span class="material-symbols-outlined" style="font-size:18px">visibility</span>
-                                    </a>
-                                    <a href="{{ route('company.projects.edit', $project) }}"
-                                        class="p-1.5 rounded-lg hover:bg-primary/10 text-text-muted hover:text-primary
-                                               transition-colors"
-                                        title="Edit">
-                                        <span class="material-symbols-outlined" style="font-size:18px">edit_square</span>
-                                    </a>
-                                    <form method="POST" action="{{ route('company.projects.destroy', $project) }}"
-                                        onsubmit="return confirm('Delete {{ addslashes($project->name) }}?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                            class="p-1.5 rounded-lg hover:bg-status-cancelled/10 text-text-muted
-                                                   hover:text-status-cancelled transition-colors"
-                                            title="Delete">
-                                            <span class="material-symbols-outlined" style="font-size:18px">delete</span>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
+                           <td class="px-5 py-4">
+    <div class="flex items-center justify-end gap-1">
 
+        {{-- VIEW --}}
+        <a href="{{ route('company.projects.show', $project) }}"
+            class="p-1.5 rounded-lg hover:bg-primary/10 text-text-muted hover:text-primary transition-colors"
+            title="View">
+            <span class="material-symbols-outlined" style="font-size:18px">visibility</span>
+        </a>
+
+        {{-- EDIT --}}
+        <a href="{{ route('company.projects.edit', $project) }}"
+            class="p-1.5 rounded-lg hover:bg-primary/10 text-text-muted hover:text-primary transition-colors"
+            title="Edit">
+            <span class="material-symbols-outlined" style="font-size:18px">edit_square</span>
+        </a>
+
+      
+
+        {{-- DELETE --}}
+        <form method="POST" action="{{ route('company.projects.destroy', $project) }}"
+            onsubmit="return confirm('Delete {{ addslashes($project->name) }}?')">
+            @csrf
+            @method('DELETE')
+            <button type="submit"
+                class="p-1.5 rounded-lg hover:bg-status-cancelled/10 text-text-muted hover:text-status-cancelled transition-colors"
+                title="Delete">
+                <span class="material-symbols-outlined" style="font-size:18px">delete</span>
+            </button>
+        </form>
+
+    </div>
+</td>
                         </tr>
                     @empty
                         <tr>

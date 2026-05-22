@@ -5,7 +5,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
             <div class="flex items-center gap-2 text-sm text-text-muted mb-1">
-                <a href="#" class="hover:text-primary transition-colors">Companies</a>
+                <a href="{{route('admin.dashboard')}}" class="hover:text-primary transition-colors">Companies</a>
                 <span class="material-symbols-outlined" style="font-size:14px">chevron_right</span>
                 <span class="text-on-surface font-medium">New Company</span>
             </div>
@@ -183,47 +183,57 @@
                                 class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-[13.5px] text-on-surface placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary focus:bg-white transition-all" />
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-[12px] font-bold text-slate-600 uppercase tracking-wide mb-1.5"
-                                    for="country">
-                                    Country
-                                </label>
-                                <select id="country" name="country"
-                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-[13.5px] text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary focus:bg-white transition-all appearance-none cursor-pointer">
-                                    <option value="">Select country</option>
-                                    <option value="US" {{ old('country') == 'US' ? 'selected' : '' }}>United States
-                                    </option>
-                                    <option value="GB" {{ old('country') == 'GB' ? 'selected' : '' }}>United Kingdom
-                                    </option>
-                                    <option value="CA" {{ old('country') == 'CA' ? 'selected' : '' }}>Canada</option>
-                                    <option value="AU" {{ old('country') == 'AU' ? 'selected' : '' }}>Australia
-                                    </option>
-                                    <option value="PK" {{ old('country') == 'PK' ? 'selected' : '' }}>Pakistan
-                                    </option>
-                                    <option value="AE" {{ old('country') == 'AE' ? 'selected' : '' }}>UAE</option>
-                                    <option value="IN" {{ old('country') == 'IN' ? 'selected' : '' }}>India</option>
-                                    <option value="DE" {{ old('country') == 'DE' ? 'selected' : '' }}>Germany</option>
-                                    <option value="FR" {{ old('country') == 'FR' ? 'selected' : '' }}>France</option>
-                                    {{-- Add more countries as needed --}}
-                                </select>
-                                @error('country')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            <div>
-                                <label class="block text-[12px] font-bold text-slate-600 uppercase tracking-wide mb-1.5"
-                                    for="state_province">
-                                    State / Province
-                                </label>
-                                <input type="text" id="state_province" name="state_province"
-                                    value="{{ old('state_province') }}" placeholder="e.g. California"
-                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-[13.5px] text-on-surface placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary focus:bg-white transition-all" />
-                                @error('state_province')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            <div>
+                      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div>
+        <label class="block text-[12px] font-bold text-slate-600 uppercase tracking-wide mb-1.5"
+            for="country">
+            Country
+        </label>
+
+        <select id="country" name="country_id"
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-[13.5px] text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary focus:bg-white transition-all appearance-none cursor-pointer">
+
+            <option value="">Select country</option>
+
+            @foreach($countries as $country)
+                <option value="{{ $country->id }}"
+                    {{ old('country_id') == $country->id ? 'selected' : '' }}>
+                    {{ $country->name }}
+                </option>
+            @endforeach
+
+        </select>
+
+        @error('country_id')
+            <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+        @enderror
+    </div>
+</div>
+                           <div>
+    <label class="block text-[12px] font-bold text-slate-600 uppercase tracking-wide mb-1.5"
+        for="city_id">
+        City
+    </label>
+
+    <select id="city_id" name="city_id"
+        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50">
+
+        <option value="">Select City</option>
+
+        @foreach($cities as $city)
+            <option value="{{ $city->id }}"
+                {{ old('city_id') == $city->id ? 'selected' : '' }}>
+                {{ $city->name }}
+            </option>
+        @endforeach
+
+    </select>
+
+    @error('city_id')
+        <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+    @enderror
+</div>
+                         {{-- <div>
                                 <label class="block text-[12px] font-bold text-slate-600 uppercase tracking-wide mb-1.5"
                                     for="postal_code">
                                     Postal Code
@@ -234,7 +244,7 @@
                                 @error('postal_code')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
-                            </div>
+                            </div>--}}
                         </div>
 
                     </div>

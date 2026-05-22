@@ -363,10 +363,10 @@
         <nav class="flex-1 overflow-y-auto py-3 px-2.5 space-y-0.5">
 
             {{-- Dashboard (active) --}}
-            <a href="#"
+            <a href="{{ route('admin.dashboard') }}"
                 class="nav-item nav-active flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-[13.5px]">
                 <span class="material-symbols-outlined shrink-0" style="color:#536c77">dashboard</span>
-                <span class="nav-label">Dashboard</span>
+                <span class="nav-label"> Site Dashboard</span>
             </a>
 
             {{-- company --}}
@@ -380,23 +380,30 @@
                         <span class="material-symbols-outlined chevron nav-label" style="font-size:16px">expand_more</span>
                     </button>
                     <div id="submenu-appointments" class="submenu ml-3 mt-0.5 pl-5 border-l-2 border-slate-100 space-y-0.5">
+
+                        <a href="{{ route('admin.company.index') }}"
+                            class="submenu-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-[#536c77] hover:bg-slate-50 text-[12.5px] transition-all">
+                            <span class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></span> List
+                        </a>
+
+
                         <a href="{{ route('admin.company.create') }}"
                             class="submenu-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-[#536c77] hover:bg-slate-50 text-[12.5px] transition-all">
                             <span class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></span>Create
                         </a>
-                        <a href="#"
-                            class="submenu-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-[#536c77] hover:bg-slate-50 text-[12.5px] transition-all">
-                            <span class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></span>Calendar View
-                        </a>
-                        <a href="#"
+
+
+
+                        {{-- <a href="#"
                             class="submenu-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-[#536c77] hover:bg-slate-50 text-[12.5px] transition-all">
                             <span class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></span>Waitlist
                         </a>
                         <a href="#"
                             class="submenu-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-[#536c77] hover:bg-slate-50 text-[12.5px] transition-all">
                             <span class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></span>Recurring Bookings
-                        </a>
+                        </a> --}}
                     </div>
+
                 </div>
             @endsuperAdmin
 
@@ -411,9 +418,9 @@
                 <div id="submenu-patients" class="submenu ml-3 mt-0.5 pl-5 border-l-2 border-slate-100 space-y-0.5">
                     <a href="{{ route('company.projects.index') }}"
                         class="submenu-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-[#536c77] hover:bg-slate-50 text-[12.5px] transition-all">
-                        <span class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></span>create
+                        <span class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></span>Show
                     </a>
-                    <a href="#"
+                    {{-- <a href="#"
                         class="submenu-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-[#536c77] hover:bg-slate-50 text-[12.5px] transition-all">
                         <span class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></span>New Patient
                     </a>
@@ -424,7 +431,7 @@
                     <a href="#"
                         class="submenu-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-[#536c77] hover:bg-slate-50 text-[12.5px] transition-all">
                         <span class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></span>Consent Forms
-                    </a>
+                    </a> --}}
                 </div>
             </div>
 
@@ -433,31 +440,100 @@
                 <button onclick="toggleSubmenu('submenu-treatments', this)"
                     class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-[#536c77] transition-all duration-150 text-[13.5px]">
                     <span class="material-symbols-outlined shrink-0">medical_services</span>
-                    <span class="nav-label flex-1 text-left">Treatments</span>
+                    <span class="nav-label flex-1 text-left">Cameras</span>
                     <span class="material-symbols-outlined chevron nav-label" style="font-size:16px">expand_more</span>
                 </button>
                 <div id="submenu-treatments" class="submenu ml-3 mt-0.5 pl-5 border-l-2 border-slate-100 space-y-0.5">
-                    <a href="#"
+                    <a href="{{ route('company.cameras.index') }}"
                         class="submenu-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-[#536c77] hover:bg-slate-50 text-[12.5px] transition-all">
-                        <span class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></span>Service Catalog
+                        <span class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></span>Show
                     </a>
-                    <a href="#"
+
+                    {{-- <a href="#"
                         class="submenu-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-[#536c77] hover:bg-slate-50 text-[12.5px] transition-all">
                         <span class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></span>Treatment Plans
                     </a>
                     <a href="#"
                         class="submenu-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-[#536c77] hover:bg-slate-50 text-[12.5px] transition-all">
                         <span class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></span>Before & After
+                    </a> --}}
+                </div>
+
+                
+
+            </div>
+
+            {{-- Country Menu --}}
+            <div>
+                <button onclick="toggleSubmenu('submenu-country', this)"
+                    class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-[#536c77] transition-all duration-150 text-[13.5px]">
+
+                    <span class="material-symbols-outlined shrink-0">public</span>
+
+                    <span class="nav-label flex-1 text-left">Country</span>
+
+                    <span class="material-symbols-outlined chevron nav-label" style="font-size:16px">
+                        expand_more
+                    </span>
+                </button>
+
+                <div id="submenu-country" class="submenu ml-3 mt-0.5 pl-5 border-l-2 border-slate-100 space-y-0.5">
+
+                    {{-- Countries --}}
+                    <a href="{{ route('company.countries.index') }}"
+                        class="submenu-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-[#536c77] hover:bg-slate-50 text-[12.5px] transition-all">
+
+                        <span class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></span>
+                        Countries
                     </a>
+
+                    {{-- Cities --}}
+                    <a href="{{ route('company.cities.index') }}"
+                        class="submenu-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-[#536c77] hover:bg-slate-50 text-[12.5px] transition-all">
+
+                        <span class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></span>
+                        Cities
+                    </a>
+  
                 </div>
             </div>
 
+            {{-- Storage --}}
+<div>
+    <button onclick="toggleSubmenu('submenu-country-2', this)"
+        class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-[#536c77] transition-all duration-150 text-[13.5px]">
+
+       <span class="material-symbols-outlined shrink-0">inventory_2</span>
+
+        <span class="nav-label flex-1 text-left">Storage</span>
+
+        <span class="material-symbols-outlined chevron nav-label" style="font-size:16px">
+            expand_more
+        </span>
+    </button>
+
+    <div id="submenu-country-2" class="submenu ml-3 mt-0.5 pl-5 border-l-2 border-slate-100 space-y-0.5">
+
+        
+
+        <a href="{{ route('admin.storage.index') }}"
+            class="submenu-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-[#536c77] hover:bg-slate-50 text-[12.5px]">
+
+            <span class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></span>
+            Menu
+        </a>
+
+    </div>
+</div>
+
+            
+
             {{-- Payments --}}
-            <div>
+            {{-- <div>
                 <button onclick="toggleSubmenu('submenu-payments', this)"
                     class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-[#536c77] transition-all duration-150 text-[13.5px]">
                     <span class="material-symbols-outlined shrink-0">payments</span>
-                    <span class="nav-label flex-1 text-left">Payments</span>
+                    <span class="nav-label flex-1 text-left">Billing & Invoices</span>
                     <span class="material-symbols-outlined chevron nav-label" style="font-size:16px">expand_more</span>
                 </button>
                 <div id="submenu-payments" class="submenu ml-3 mt-0.5 pl-5 border-l-2 border-slate-100 space-y-0.5">
@@ -477,14 +553,13 @@
                         <span class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></span>Refunds
                     </a>
                 </div>
-            </div>
+            </div> --}}
 
             {{-- Staff --}}
-            <div>
-                <button onclick="toggleSubmenu('submenu-staff', this)"
+            {{-- <button onclick="toggleSubmenu('submenu-staff', this)"
                     class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-[#536c77] transition-all duration-150 text-[13.5px]">
                     <span class="material-symbols-outlined shrink-0">badge</span>
-                    <span class="nav-label flex-1 text-left">Staff</span>
+                    <span class="nav-label flex-1 text-left"> Security Staffs</span>
                     <span class="material-symbols-outlined chevron nav-label"
                         style="font-size:16px">expand_more</span>
                 </button>
@@ -502,7 +577,8 @@
                         <span class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></span>Roles & Permissions
                     </a>
                 </div>
-            </div>
+            </div> --}}
+
 
             {{-- Divider --}}
             <div class="my-2 border-t border-slate-100"></div>
@@ -513,6 +589,8 @@
                 <span class="material-symbols-outlined shrink-0">assessment</span>
                 <span class="nav-label">Roles & Permissions</span>
             </a>
+
+
 
             {{-- Settings --}}
             <a href="{{ route('admin.permissions.index') }}"
@@ -525,8 +603,12 @@
                 <span class="material-symbols-outlined shrink-0">settings</span>
                 <span class="nav-label">Settings</span>
             </a>
+            
+
+            
 
         </nav>
+
 
         {{-- New Appointment CTA --}}
         <div class="px-3 py-4 border-t border-slate-100 shrink-0">
@@ -585,12 +667,12 @@
             <div class="ml-auto flex items-center gap-2 lg:gap-3">
 
                 {{-- Notification --}}
-                <button
+                {{-- <button
                     class="relative p-2 text-slate-500 hover:text-[#536c77] hover:bg-slate-50 rounded-xl transition-all">
                     <span class="material-symbols-outlined">notifications</span>
                     <span
                         class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-                </button>
+                </button> --}}
 
                 {{-- Divider --}}
                 <div class="hidden sm:block h-7 w-px bg-slate-200"></div>
@@ -601,8 +683,8 @@
                         class="w-9 h-9 rounded-full object-cover border-2 border-white ring-2 ring-slate-200 group-hover:ring-[#536c77]/40 transition-all"
                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuADatYABYjqnChzgYlg2TE9WBeylrs8QriGgvvnWYipknAzhVxC1Um--O7k61VN5YTpuOVHIYWmi1BLNBxnkBiqh17ydH1qpwU31mjXjLp0HRwmY8B-ORvDtGWR8vYwAhKiQzFfaHE_ZOwZH6-FUXK6AGbjrU35oiHqlXwzZ1zot_ruB9itxZK2VaaWsVxgDLU88AfJS9Za13nc8-2F9pEYboEcOhr4SsaoIEE7j9WJPfjj8L4q9wrF4tqtDANqRF9rWxoNAaWPB7WJ" />
                     <div class="hidden md:block">
-                        <p class="text-sm font-bold leading-tight text-slate-700">Sarah Jenkins</p>
-                        <p class="text-[11px] text-slate-400">Reception</p>
+                        <p class="text-sm font-bold leading-tight text-slate-700">{{ auth()->user()->name }}</p>
+                        {{-- <p class="text-[11px] text-slate-400">{{ auth()->user()}}</p> --}}
                     </div>
                     <span class="material-symbols-outlined text-slate-400 hidden md:block"
                         style="font-size:16px">expand_more</span>

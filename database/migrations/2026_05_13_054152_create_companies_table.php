@@ -28,7 +28,7 @@ return new class extends Migration {
 
             $table->string('address_1')->nullable();
             $table->string('address_2')->nullable();
-            $table->string('country')->nullable();
+            $table->foreignId('country_id')->nullable()->constrained('countries')->nullOnDelete();
             $table->string('state_province')->nullable();
             $table->string('postal_code')->nullable();
 

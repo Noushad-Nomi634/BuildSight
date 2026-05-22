@@ -98,12 +98,12 @@
     </form>
 
     {{-- Register link --}}
-    <p class="mt-6 text-center text-[13px] text-slate-500">
+   {{-- <p class="mt-6 text-center text-[13px] text-slate-500">
         Don't have an account?
         <a href="{{ route('register') }}" class="text-[#536c77] font-semibold hover:underline transition-colors ml-1">
             Create one
         </a>
-    </p>
+    </p>--}}
 
     <script>
         function togglePassword(fieldId, btn) {

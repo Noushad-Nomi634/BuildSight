@@ -18,7 +18,9 @@ class Company extends Model
         'logo',
         'address_1',
         'address_2',
-        'country',
+        'country_id',
+        'city_id',
+
         'website',
         'state_province',
         'postal_code',
