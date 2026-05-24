@@ -189,7 +189,7 @@
         {{-- ── PERMISSION MATRIX (right) ── --}}
         <div class="xl:col-span-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col">
 
-            {{-- Header --}}
+            {{-- Headers --}}
             <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0">
                 <div>
                     <h3 class="font-bold text-[14px] text-[#1e2a2e]" id="matrix-title">Select a role</h3>
